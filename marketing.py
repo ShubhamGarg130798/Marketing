@@ -375,21 +375,55 @@ if len(results_df) > 0:
         )
         st.plotly_chart(fig_leads, use_container_width=True)
     
-    # ROI comparison
-    roi_df = results_df.copy()
-    roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+    # Comparison bar chart: Amount to Spend vs Amount to Disburse
+    col1, col2 = st.columns(2)
     
-    fig_roi = px.bar(
-        roi_df.sort_values('ROI', ascending=True),
-        x='ROI',
-        y='Channel',
-        orientation='h',
-        title='Return on Investment by Channel',
-        color='ROI',
-        color_continuous_scale='Greens'
-    )
-    fig_roi.update_layout(showlegend=False)
-    st.plotly_chart(fig_roi, use_container_width=True)
+    with col1:
+        # Create comparison dataframe
+        comparison_df = results_df[['Channel', 'Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)']].copy()
+        comparison_df_melted = comparison_df.melt(
+            id_vars='Channel',
+            value_vars=['Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)'],
+            var_name='Type',
+            value_name='Amount (₹ Lakhs)'
+        )
+        
+        fig_comparison = px.bar(
+            comparison_df_melted,
+            x='Channel',
+            y='Amount (₹ Lakhs)',
+            color='Type',
+            title='Spend vs Disburse Comparison by Channel',
+            barmode='group',
+            color_discrete_map={
+                'Amount to Spend (₹ Lakhs)': '#EF553B',
+                'Amount to Disburse (₹ Lakhs)': '#00CC96'
+            }
+        )
+        fig_comparison.update_layout(
+            xaxis_title="Channel",
+            yaxis_title="Amount (₹ Lakhs)",
+            legend_title="",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
+        st.plotly_chart(fig_comparison, use_container_width=True)
+    
+    with col2:
+        # ROI comparison
+        roi_df = results_df.copy()
+        roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+        
+        fig_roi = px.bar(
+            roi_df.sort_values('ROI', ascending=True),
+            x='ROI',
+            y='Channel',
+            orientation='h',
+            title='Return on Investment by Channel',
+            color='ROI',
+            color_continuous_scale='Greens'
+        )
+        fig_roi.update_layout(showlegend=False)
+        st.plotly_chart(fig_roi, use_container_width=True)
 else:
     st.info("Add channels to see the charts.")
 
