@@ -272,188 +272,191 @@ with col4:
 with col5:
     st.metric("Total Marketing Spend", f"₹{results_df['Amount to Spend (₹ Lakhs)'].sum():.1f} L", delta=None)
 
-# Tabs for different views
-tab1, tab2, tab3 = st.tabs(["📊 Detailed Results", "📈 Charts", "💡 Insights"])
+# Main content sections - all on one page
 
-with tab1:
-    st.header("Channel Performance Summary")
+# Section 1: Detailed Results Table
+st.header("📊 Channel Performance Summary")
+
+if len(results_df) > 0:
+    # Create comprehensive results table
+    detailed_df = results_df.copy()
     
-    if len(results_df) > 0:
-        # Create comprehensive results table
-        detailed_df = results_df.copy()
-        
-        # Add ROI and Cost per Disbursed Lead columns
-        detailed_df['ROI'] = (detailed_df['Amount to Disburse (₹ Lakhs)'] / detailed_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
-        detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Amount to Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(2)
-        
-        # Reorder columns for better readability
-        detailed_df = detailed_df[[
-            'Channel',
-            'CPL (₹)',
-            'Conversion %',
-            'Leads Required',
-            'Leads to Disburse',
-            'Amount to Spend (₹ Lakhs)',
-            'Amount to Disburse (₹ Lakhs)',
-            'ROI',
-            'Cost per Disbursed Lead'
-        ]]
-        
-        # Add totals row
-        totals = {
-            'Channel': 'TOTAL',
-            'CPL (₹)': '-',
-            'Conversion %': '-',
-            'Leads Required': detailed_df['Leads Required'].sum(),
-            'Leads to Disburse': detailed_df['Leads to Disburse'].sum(),
-            'Amount to Spend (₹ Lakhs)': detailed_df['Amount to Spend (₹ Lakhs)'].sum(),
-            'Amount to Disburse (₹ Lakhs)': detailed_df['Amount to Disburse (₹ Lakhs)'].sum(),
-            'ROI': '-',
-            'Cost per Disbursed Lead': '-'
-        }
-        
-        detailed_df = pd.concat([detailed_df, pd.DataFrame([totals])], ignore_index=True)
-        
-        # Display the table with formatting
-        st.dataframe(detailed_df.style.format({
-            'CPL (₹)': lambda x: f'₹{x}' if x != '-' else '-',
-            'Conversion %': lambda x: f'{x}%' if x != '-' else '-',
-            'Leads Required': '{:,.0f}',
-            'Leads to Disburse': '{:,.0f}',
-            'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
-            'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
-            'ROI': lambda x: f'{x}x' if x != '-' else '-',
-            'Cost per Disbursed Lead': lambda x: f'₹{x}' if x != '-' else '-'
-        }), use_container_width=True)
-        
-        # Download button
-        csv = detailed_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download Results as CSV",
-            data=csv,
-            file_name="marketing_budget_results.csv",
-            mime="text/csv"
+    # Add ROI and Cost per Disbursed Lead columns
+    detailed_df['ROI'] = (detailed_df['Amount to Disburse (₹ Lakhs)'] / detailed_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
+    detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Amount to Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(2)
+    
+    # Reorder columns for better readability
+    detailed_df = detailed_df[[
+        'Channel',
+        'CPL (₹)',
+        'Conversion %',
+        'Leads Required',
+        'Leads to Disburse',
+        'Amount to Spend (₹ Lakhs)',
+        'Amount to Disburse (₹ Lakhs)',
+        'ROI',
+        'Cost per Disbursed Lead'
+    ]]
+    
+    # Add totals row
+    totals = {
+        'Channel': 'TOTAL',
+        'CPL (₹)': '-',
+        'Conversion %': '-',
+        'Leads Required': detailed_df['Leads Required'].sum(),
+        'Leads to Disburse': detailed_df['Leads to Disburse'].sum(),
+        'Amount to Spend (₹ Lakhs)': detailed_df['Amount to Spend (₹ Lakhs)'].sum(),
+        'Amount to Disburse (₹ Lakhs)': detailed_df['Amount to Disburse (₹ Lakhs)'].sum(),
+        'ROI': '-',
+        'Cost per Disbursed Lead': '-'
+    }
+    
+    detailed_df = pd.concat([detailed_df, pd.DataFrame([totals])], ignore_index=True)
+    
+    # Display the table with formatting
+    st.dataframe(detailed_df.style.format({
+        'CPL (₹)': lambda x: f'₹{x}' if x != '-' else '-',
+        'Conversion %': lambda x: f'{x}%' if x != '-' else '-',
+        'Leads Required': '{:,.0f}',
+        'Leads to Disburse': '{:,.0f}',
+        'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
+        'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
+        'ROI': lambda x: f'{x}x' if x != '-' else '-',
+        'Cost per Disbursed Lead': lambda x: f'₹{x}' if x != '-' else '-'
+    }), use_container_width=True)
+    
+    # Download button
+    csv = detailed_df.to_csv(index=False)
+    st.download_button(
+        label="📥 Download Results as CSV",
+        data=csv,
+        file_name="marketing_budget_results.csv",
+        mime="text/csv"
+    )
+else:
+    st.info("Add channels to see detailed results.")
+
+st.markdown("---")
+
+# Section 2: Visual Analytics
+st.header("📈 Visual Analytics")
+
+if len(results_df) > 0:
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Budget allocation pie chart
+        fig_budget = px.pie(
+            results_df, 
+            values='Amount to Spend (₹ Lakhs)', 
+            names='Channel',
+            title='Marketing Budget Allocation',
+            hole=0.4
         )
-    else:
-        st.info("Add channels to see detailed results.")
-
-with tab2:
-    st.header("Visual Analytics")
+        fig_budget.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig_budget, use_container_width=True)
     
-    if len(results_df) > 0:
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Budget allocation pie chart
-            fig_budget = px.pie(
-                results_df, 
-                values='Amount to Spend (₹ Lakhs)', 
-                names='Channel',
-                title='Marketing Budget Allocation',
-                hole=0.4
-            )
-            fig_budget.update_traces(textposition='inside', textinfo='percent+label')
-            st.plotly_chart(fig_budget, use_container_width=True)
-        
-        with col2:
-            # Leads distribution
-            fig_leads = px.bar(
-                results_df,
-                x='Channel',
-                y='Leads Required',
-                title='Leads Required by Channel',
-                color='Conversion %',
-                color_continuous_scale='Blues'
-            )
-            st.plotly_chart(fig_leads, use_container_width=True)
-        
-        # ROI comparison
-        roi_df = results_df.copy()
-        roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
-        
-        fig_roi = px.bar(
-            roi_df.sort_values('ROI', ascending=True),
-            x='ROI',
-            y='Channel',
-            orientation='h',
-            title='Return on Investment by Channel',
-            color='ROI',
-            color_continuous_scale='Greens'
+    with col2:
+        # Leads distribution
+        fig_leads = px.bar(
+            results_df,
+            x='Channel',
+            y='Leads Required',
+            title='Leads Required by Channel',
+            color='Conversion %',
+            color_continuous_scale='Blues'
         )
-        fig_roi.update_layout(showlegend=False)
-        st.plotly_chart(fig_roi, use_container_width=True)
-    else:
-        st.info("Add channels to see the charts.")
-
-with tab3:
-    st.header("Key Insights & Recommendations")
+        st.plotly_chart(fig_leads, use_container_width=True)
     
-    if len(results_df) > 0:
-        # Calculate insights
-        roi_df = results_df.copy()
-        roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+    # ROI comparison
+    roi_df = results_df.copy()
+    roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+    
+    fig_roi = px.bar(
+        roi_df.sort_values('ROI', ascending=True),
+        x='ROI',
+        y='Channel',
+        orientation='h',
+        title='Return on Investment by Channel',
+        color='ROI',
+        color_continuous_scale='Greens'
+    )
+    fig_roi.update_layout(showlegend=False)
+    st.plotly_chart(fig_roi, use_container_width=True)
+else:
+    st.info("Add channels to see the charts.")
+
+st.markdown("---")
+
+# Section 3: Key Insights & Recommendations
+st.header("💡 Key Insights & Recommendations")
+
+if len(results_df) > 0:
+    # Calculate insights
+    roi_df = results_df.copy()
+    roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+    
+    best_roi_channel = roi_df.loc[roi_df['ROI'].idxmax(), 'Channel']
+    worst_roi_channel = roi_df.loc[roi_df['ROI'].idxmin(), 'Channel']
+    highest_spend_channel = results_df.loc[results_df['Amount to Spend (₹ Lakhs)'].idxmax(), 'Channel']
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.info(f"""
+        **🏆 Best Performing Channel**
         
-        best_roi_channel = roi_df.loc[roi_df['ROI'].idxmax(), 'Channel']
-        worst_roi_channel = roi_df.loc[roi_df['ROI'].idxmin(), 'Channel']
-        highest_spend_channel = results_df.loc[results_df['Amount to Spend (₹ Lakhs)'].idxmax(), 'Channel']
+        {best_roi_channel} shows the highest ROI of {roi_df.loc[roi_df['Channel'] == best_roi_channel, 'ROI'].values[0]:.2f}x
+        """)
         
-        col1, col2 = st.columns(2)
+        st.warning(f"""
+        **⚠️ Channel Requiring Attention**
         
-        with col1:
+        {worst_roi_channel} has the lowest ROI of {roi_df.loc[roi_df['Channel'] == worst_roi_channel, 'ROI'].values[0]:.2f}x
+        """)
+    
+    with col2:
+        total_spend = results_df['Amount to Spend (₹ Lakhs)'].sum()
+        if total_spend > 0:
+            st.success(f"""
+            **💰 Budget Efficiency**
+            
+            Total marketing efficiency: {(target_from_marketing / total_spend):.2f}x return on marketing spend
+            """)
+        
+        if disbursal_leads_required > 0:
             st.info(f"""
-            **🏆 Best Performing Channel**
+            **📊 Lead Generation Cost**
             
-            {best_roi_channel} shows the highest ROI of {roi_df.loc[roi_df['Channel'] == best_roi_channel, 'ROI'].values[0]:.2f}x
+            Average cost per disbursed lead: ₹{(total_spend * 100000 / disbursal_leads_required):.2f}
             """)
-            
-            st.warning(f"""
-            **⚠️ Channel Requiring Attention**
-            
-            {worst_roi_channel} has the lowest ROI of {roi_df.loc[roi_df['Channel'] == worst_roi_channel, 'ROI'].values[0]:.2f}x
-            """)
-        
-        with col2:
-            total_spend = results_df['Amount to Spend (₹ Lakhs)'].sum()
-            if total_spend > 0:
-                st.success(f"""
-                **💰 Budget Efficiency**
-                
-                Total marketing efficiency: {(target_from_marketing / total_spend):.2f}x return on marketing spend
-                """)
-            
-            if disbursal_leads_required > 0:
-                st.info(f"""
-                **📊 Lead Generation Cost**
-                
-                Average cost per disbursed lead: ₹{(total_spend * 100000 / disbursal_leads_required):.2f}
-                """)
-        
-        # Recommendations
-        st.subheader("📋 Recommendations")
-        
-        recommendations = []
-        
-        # Check conversion rates
-        low_conv_channels = channel_df[channel_df['Conversion %'] < 3]['Channel'].tolist()
-        if low_conv_channels:
-            recommendations.append(f"• Consider improving conversion rates for {', '.join(low_conv_channels)} through better lead qualification")
-        
-        # Check CPL
-        high_cpl_channels = channel_df[channel_df['CPL'] > 100]['Channel'].tolist()
-        if high_cpl_channels:
-            recommendations.append(f"• Optimize campaigns for {', '.join(high_cpl_channels)} to reduce Cost Per Lead")
-        
-        # Budget allocation
-        if roi_df.loc[roi_df['Channel'] == best_roi_channel, 'ROI'].values[0] > 2 * roi_df.loc[roi_df['Channel'] == worst_roi_channel, 'ROI'].values[0]:
-            recommendations.append(f"• Consider reallocating budget from {worst_roi_channel} to {best_roi_channel} for better ROI")
-        
-        if recommendations:
-            for rec in recommendations:
-                st.write(rec)
-        else:
-            st.write("• Current budget allocation appears to be well-balanced")
+    
+    # Recommendations
+    st.subheader("📋 Recommendations")
+    
+    recommendations = []
+    
+    # Check conversion rates
+    low_conv_channels = channel_df[channel_df['Conversion %'] < 3]['Channel'].tolist()
+    if low_conv_channels:
+        recommendations.append(f"• Consider improving conversion rates for {', '.join(low_conv_channels)} through better lead qualification")
+    
+    # Check CPL
+    high_cpl_channels = channel_df[channel_df['CPL'] > 100]['Channel'].tolist()
+    if high_cpl_channels:
+        recommendations.append(f"• Optimize campaigns for {', '.join(high_cpl_channels)} to reduce Cost Per Lead")
+    
+    # Budget allocation
+    if roi_df.loc[roi_df['Channel'] == best_roi_channel, 'ROI'].values[0] > 2 * roi_df.loc[roi_df['Channel'] == worst_roi_channel, 'ROI'].values[0]:
+        recommendations.append(f"• Consider reallocating budget from {worst_roi_channel} to {best_roi_channel} for better ROI")
+    
+    if recommendations:
+        for rec in recommendations:
+            st.write(rec)
     else:
-        st.info("Add channels to see insights and recommendations.")
+        st.write("• Current budget allocation appears to be well-balanced")
+else:
+    st.info("Add channels to see insights and recommendations.")
 
 # Footer
 st.markdown("---")
