@@ -285,8 +285,12 @@ if len(results_df) > 0:
     detailed_df['ROI'] = (detailed_df['Amount to Disburse (₹ Lakhs)'] / detailed_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
     detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Amount to Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(2)
     
+    # Add serial number column starting from 1
+    detailed_df.insert(0, 'S.No', range(1, len(detailed_df) + 1))
+    
     # Reorder columns for better readability
     detailed_df = detailed_df[[
+        'S.No',
         'Channel',
         'CPL (₹)',
         'Conversion %',
@@ -300,6 +304,7 @@ if len(results_df) > 0:
     
     # Add totals row
     totals = {
+        'S.No': '-',
         'Channel': 'TOTAL',
         'CPL (₹)': '-',
         'Conversion %': '-',
@@ -315,6 +320,7 @@ if len(results_df) > 0:
     
     # Display the table with formatting
     st.dataframe(detailed_df.style.format({
+        'S.No': lambda x: x if x != '-' else '-',
         'CPL (₹)': lambda x: f'₹{x}' if x != '-' else '-',
         'Conversion %': lambda x: f'{x}%' if x != '-' else '-',
         'Leads Required': '{:,.0f}',
@@ -324,15 +330,6 @@ if len(results_df) > 0:
         'ROI': lambda x: f'{x}x' if x != '-' else '-',
         'Cost per Disbursed Lead': lambda x: f'₹{x}' if x != '-' else '-'
     }), use_container_width=True)
-    
-    # Download button
-    csv = detailed_df.to_csv(index=False)
-    st.download_button(
-        label="📥 Download Results as CSV",
-        data=csv,
-        file_name="marketing_budget_results.csv",
-        mime="text/csv"
-    )
 else:
     st.info("Add channels to see detailed results.")
 
