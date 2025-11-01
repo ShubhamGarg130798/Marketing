@@ -371,8 +371,10 @@ if len(results_df) > 0:
             y='Leads Required',
             title='Leads Required by Channel',
             color='Conversion %',
-            color_continuous_scale='Blues'
+            color_continuous_scale='Blues',
+            text='Leads Required'
         )
+        fig_leads.update_traces(texttemplate='%{text:,}', textposition='outside')
         st.plotly_chart(fig_leads, use_container_width=True)
     
     # Comparison bar chart: Amount to Spend vs Amount to Disburse
@@ -398,8 +400,10 @@ if len(results_df) > 0:
             color_discrete_map={
                 'Amount to Spend (₹ Lakhs)': '#EF553B',
                 'Amount to Disburse (₹ Lakhs)': '#00CC96'
-            }
+            },
+            text='Amount (₹ Lakhs)'
         )
+        fig_comparison.update_traces(texttemplate='₹%{text:.2f}L', textposition='outside')
         fig_comparison.update_layout(
             xaxis_title="Channel",
             yaxis_title="Amount (₹ Lakhs)",
@@ -420,8 +424,10 @@ if len(results_df) > 0:
             orientation='h',
             title='Return on Investment by Channel',
             color='ROI',
-            color_continuous_scale='Greens'
+            color_continuous_scale='Greens',
+            text='ROI'
         )
+        fig_roi.update_traces(texttemplate='%{text:.2f}x', textposition='outside')
         fig_roi.update_layout(showlegend=False)
         st.plotly_chart(fig_roi, use_container_width=True)
 else:
