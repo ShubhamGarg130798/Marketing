@@ -98,7 +98,7 @@ admin_password = st.sidebar.text_input(
 )
 
 # Set your password here (change this to your desired password)
-CORRECT_PASSWORD = "Fintech@24680"  # Change this to your secure password
+CORRECT_PASSWORD = "admin123"  # Change this to your secure password
 
 is_admin = (admin_password == CORRECT_PASSWORD)
 
@@ -106,8 +106,6 @@ if admin_password and not is_admin:
     st.sidebar.error("❌ Incorrect password")
 elif is_admin:
     st.sidebar.success("✅ Admin access granted")
-
-st.sidebar.markdown("---")
 
 # Initialize session state for channels if not exists
 if 'channels' not in st.session_state:
@@ -119,96 +117,102 @@ if 'channels' not in st.session_state:
         {'name': 'Email', 'cpl': 200.0, 'conv': 2.00, 'budget': 5.0}
     ]
 
-# Add new channel button
-st.sidebar.markdown("### Edit Channel Parameters")
-col1, col2 = st.sidebar.columns([3, 1])
-with col1:
-    if st.button("➕ Add New Channel", use_container_width=True, disabled=not is_admin):
-        st.session_state.channels.append({
-            'name': f'Channel {len(st.session_state.channels) + 1}',
-            'cpl': 100.0,
-            'conv': 2.0,
-            'budget': 0.0
+# Only show channel editing section if admin is authenticated
+if is_admin:
+    st.sidebar.markdown("---")
+    
+    # Add new channel button
+    st.sidebar.markdown("### Edit Channel Parameters")
+    col1, col2 = st.sidebar.columns([3, 1])
+    with col1:
+        if st.button("➕ Add New Channel", use_container_width=True):
+            st.session_state.channels.append({
+                'name': f'Channel {len(st.session_state.channels) + 1}',
+                'cpl': 100.0,
+                'conv': 2.0,
+                'budget': 0.0
+            })
+            st.rerun()
+
+    # Display and edit channels
+    edited_channels = []
+    channels_to_remove = []
+
+    for idx, channel in enumerate(st.session_state.channels):
+        st.sidebar.markdown(f"**Channel {idx + 1}**")
+        
+        col1, col2 = st.sidebar.columns([4, 1])
+        
+        with col1:
+            channel_name = st.text_input(
+                "Channel Name",
+                value=channel['name'],
+                key=f"name_{idx}",
+                label_visibility="collapsed"
+            )
+        
+        with col2:
+            if st.button("🗑️", key=f"del_{idx}", help="Delete channel"):
+                channels_to_remove.append(idx)
+        
+        col1, col2, col3 = st.sidebar.columns(3)
+        
+        with col1:
+            cpl = st.number_input(
+                "CPL", 
+                min_value=1.0, 
+                max_value=1000.0, 
+                value=float(channel['cpl']), 
+                step=0.1,
+                key=f"cpl_{idx}"
+            )
+        
+        with col2:
+            conv = st.number_input(
+                "Conv %", 
+                min_value=0.1, 
+                max_value=100.0, 
+                value=float(channel['conv']), 
+                step=0.1,
+                key=f"conv_{idx}"
+            )
+        
+        with col3:
+            budget = st.number_input(
+                "Budget %", 
+                min_value=0.0, 
+                max_value=100.0, 
+                value=float(channel['budget']), 
+                step=1.0,
+                key=f"budget_{idx}"
+            )
+        
+        edited_channels.append({
+            'name': channel_name,
+            'cpl': cpl,
+            'conv': conv,
+            'budget': budget
         })
+        
+        st.sidebar.markdown("---")
+
+    # Remove channels marked for deletion
+    if channels_to_remove:
+        for idx in sorted(channels_to_remove, reverse=True):
+            st.session_state.channels.pop(idx)
         st.rerun()
 
-if not is_admin:
-    st.sidebar.info("🔒 Enter admin password to edit channels")
-
-# Display and edit channels
-edited_channels = []
-channels_to_remove = []
-
-for idx, channel in enumerate(st.session_state.channels):
-    st.sidebar.markdown(f"**Channel {idx + 1}**")
-    
-    col1, col2 = st.sidebar.columns([4, 1])
-    
-    with col1:
-        channel_name = st.text_input(
-            "Channel Name",
-            value=channel['name'],
-            key=f"name_{idx}",
-            label_visibility="collapsed",
-            disabled=not is_admin
-        )
-    
-    with col2:
-        if st.button("🗑️", key=f"del_{idx}", help="Delete channel", disabled=not is_admin):
-            channels_to_remove.append(idx)
-    
-    col1, col2, col3 = st.sidebar.columns(3)
-    
-    with col1:
-        cpl = st.number_input(
-            "CPL", 
-            min_value=1.0, 
-            max_value=1000.0, 
-            value=float(channel['cpl']), 
-            step=0.1,
-            key=f"cpl_{idx}",
-            disabled=not is_admin
-        )
-    
-    with col2:
-        conv = st.number_input(
-            "Conv %", 
-            min_value=0.1, 
-            max_value=100.0, 
-            value=float(channel['conv']), 
-            step=0.1,
-            key=f"conv_{idx}",
-            disabled=not is_admin
-        )
-    
-    with col3:
-        budget = st.number_input(
-            "Budget %", 
-            min_value=0.0, 
-            max_value=100.0, 
-            value=float(channel['budget']), 
-            step=1.0,
-            key=f"budget_{idx}",
-            disabled=not is_admin
-        )
-    
-    edited_channels.append({
-        'name': channel_name,
-        'cpl': cpl,
-        'conv': conv,
-        'budget': budget
-    })
-    
+    # Update session state with edited values
+    st.session_state.channels = edited_channels
+else:
+    # Show current channels as read-only information
     st.sidebar.markdown("---")
-
-# Remove channels marked for deletion
-if channels_to_remove:
-    for idx in sorted(channels_to_remove, reverse=True):
-        st.session_state.channels.pop(idx)
-    st.rerun()
-
-# Update session state with edited values
-st.session_state.channels = edited_channels
+    st.sidebar.markdown("### 📊 Current Channels")
+    st.sidebar.info("🔒 Enter admin password above to edit channels")
+    
+    for idx, channel in enumerate(st.session_state.channels):
+        st.sidebar.markdown(f"**{channel['name']}**")
+        st.sidebar.text(f"CPL: ₹{channel['cpl']} | Conv: {channel['conv']}% | Budget: {channel['budget']}%")
 
 # Create dataframe from current channels
 channel_df = pd.DataFrame([
