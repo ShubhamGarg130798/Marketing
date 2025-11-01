@@ -3,6 +3,29 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
+# Indian number formatting function
+def format_indian_number(number):
+    """Format number according to Indian numbering system with commas"""
+    if pd.isna(number) or number == 0:
+        return "0"
+    
+    s = str(int(number))
+    if len(s) <= 3:
+        return s
+    
+    # Split into last 3 digits and remaining
+    last_three = s[-3:]
+    remaining = s[:-3]
+    
+    # Add commas every 2 digits for remaining part
+    result = ''
+    for i, digit in enumerate(reversed(remaining)):
+        if i > 0 and i % 2 == 0:
+            result = ',' + result
+        result = digit + result
+    
+    return result + ',' + last_three
+
 # Set page configuration
 st.set_page_config(
     page_title="Marketing Budget Calculator",
@@ -327,7 +350,7 @@ with col4:
     st.markdown(f"""
     <div class="metric-card card-purple">
         <h3>Total Leads Required</h3>
-        <p>{results_df['Leads Required'].sum():,}</p>
+        <p>{format_indian_number(results_df['Leads Required'].sum())}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -390,8 +413,8 @@ if len(results_df) > 0:
         'S.No': lambda x: x if x != '-' else '-',
         'CPL (₹)': lambda x: f'₹{x}' if x != '-' else '-',
         'Conversion %': lambda x: f'{x}%' if x != '-' else '-',
-        'Leads Required': '{:,.0f}',
-        'Leads to Disburse': '{:,.0f}',
+        'Leads Required': lambda x: format_indian_number(x) if x != '-' else '-',
+        'Leads to Disburse': lambda x: format_indian_number(x) if x != '-' else '-',
         'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
         'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
         'ROI': lambda x: f'{x}x' if x != '-' else '-',
@@ -441,7 +464,11 @@ if len(results_df) > 0:
             color_continuous_scale='Blues',
             text='Leads Required'
         )
-        fig_leads.update_traces(texttemplate='%{text:,}', textposition='outside')
+        # Format text labels with Indian numbering
+        fig_leads.update_traces(
+            texttemplate=[format_indian_number(val) for val in results_df['Leads Required']],
+            textposition='outside'
+        )
         st.plotly_chart(fig_leads, use_container_width=True)
     
     # Comparison bar chart: Amount to Spend vs Amount to Disburse
