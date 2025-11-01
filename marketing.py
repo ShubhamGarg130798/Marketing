@@ -273,26 +273,69 @@ with col5:
     st.metric("Total Marketing Spend", f"₹{results_df['Amount to Spend (₹ Lakhs)'].sum():.1f} L", delta=None)
 
 # Tabs for different views
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Summary", "📈 Charts", "📋 Detailed Results", "💡 Insights"])
+tab1, tab2, tab3 = st.tabs(["📊 Detailed Results", "📈 Charts", "💡 Insights"])
 
 with tab1:
     st.header("Channel Performance Summary")
     
     if len(results_df) > 0:
-        # Summary metrics
-        summary_df = results_df[['Channel', 'Amount to Disburse (₹ Lakhs)', 'Leads Required', 'Amount to Spend (₹ Lakhs)']].copy()
-        summary_df['ROI'] = (summary_df['Amount to Disburse (₹ Lakhs)'] / summary_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
-        summary_df['Cost per Disbursed Lead'] = ((summary_df['Amount to Spend (₹ Lakhs)'] * 100000) / (summary_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(2)
+        # Create comprehensive results table
+        detailed_df = results_df.copy()
         
-        st.dataframe(summary_df.style.format({
-            'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
+        # Add ROI and Cost per Disbursed Lead columns
+        detailed_df['ROI'] = (detailed_df['Amount to Disburse (₹ Lakhs)'] / detailed_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
+        detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Amount to Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(2)
+        
+        # Reorder columns for better readability
+        detailed_df = detailed_df[[
+            'Channel',
+            'CPL (₹)',
+            'Conversion %',
+            'Leads Required',
+            'Leads to Disburse',
+            'Amount to Spend (₹ Lakhs)',
+            'Amount to Disburse (₹ Lakhs)',
+            'ROI',
+            'Cost per Disbursed Lead'
+        ]]
+        
+        # Add totals row
+        totals = {
+            'Channel': 'TOTAL',
+            'CPL (₹)': '-',
+            'Conversion %': '-',
+            'Leads Required': detailed_df['Leads Required'].sum(),
+            'Leads to Disburse': detailed_df['Leads to Disburse'].sum(),
+            'Amount to Spend (₹ Lakhs)': detailed_df['Amount to Spend (₹ Lakhs)'].sum(),
+            'Amount to Disburse (₹ Lakhs)': detailed_df['Amount to Disburse (₹ Lakhs)'].sum(),
+            'ROI': '-',
+            'Cost per Disbursed Lead': '-'
+        }
+        
+        detailed_df = pd.concat([detailed_df, pd.DataFrame([totals])], ignore_index=True)
+        
+        # Display the table with formatting
+        st.dataframe(detailed_df.style.format({
+            'CPL (₹)': lambda x: f'₹{x}' if x != '-' else '-',
+            'Conversion %': lambda x: f'{x}%' if x != '-' else '-',
+            'Leads Required': '{:,.0f}',
+            'Leads to Disburse': '{:,.0f}',
             'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
-            'Leads Required': '{:,}',
-            'ROI': '{:.2f}x',
-            'Cost per Disbursed Lead': '₹{:.2f}'
+            'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
+            'ROI': lambda x: f'{x}x' if x != '-' else '-',
+            'Cost per Disbursed Lead': lambda x: f'₹{x}' if x != '-' else '-'
         }), use_container_width=True)
+        
+        # Download button
+        csv = detailed_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download Results as CSV",
+            data=csv,
+            file_name="marketing_budget_results.csv",
+            mime="text/csv"
+        )
     else:
-        st.info("Add channels to see the summary.")
+        st.info("Add channels to see detailed results.")
 
 with tab2:
     st.header("Visual Analytics")
@@ -343,46 +386,6 @@ with tab2:
         st.info("Add channels to see the charts.")
 
 with tab3:
-    st.header("Detailed Results")
-    
-    if len(results_df) > 0:
-        # Full results table
-        detailed_df = results_df.copy()
-        
-        # Add totals row
-        totals = {
-            'Channel': 'TOTAL',
-            'Amount to Disburse (₹ Lakhs)': detailed_df['Amount to Disburse (₹ Lakhs)'].sum(),
-            'Leads to Disburse': detailed_df['Leads to Disburse'].sum(),
-            'Leads Required': detailed_df['Leads Required'].sum(),
-            'Amount to Spend (₹ Lakhs)': detailed_df['Amount to Spend (₹ Lakhs)'].sum(),
-            'CPL (₹)': '-',
-            'Conversion %': '-'
-        }
-        
-        detailed_df = pd.concat([detailed_df, pd.DataFrame([totals])], ignore_index=True)
-        
-        st.dataframe(detailed_df.style.format({
-            'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
-            'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
-            'Leads to Disburse': '{:,.0f}',
-            'Leads Required': '{:,.0f}',
-            'CPL (₹)': lambda x: f'₹{x}' if x != '-' else '-',
-            'Conversion %': lambda x: f'{x}%' if x != '-' else '-'
-        }), use_container_width=True)
-        
-        # Download button
-        csv = detailed_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download Results as CSV",
-            data=csv,
-            file_name="marketing_budget_results.csv",
-            mime="text/csv"
-        )
-    else:
-        st.info("Add channels to see detailed results.")
-
-with tab4:
     st.header("Key Insights & Recommendations")
     
     if len(results_df) > 0:
