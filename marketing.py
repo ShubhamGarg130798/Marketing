@@ -29,7 +29,7 @@ def format_indian_number(number):
 # Set page configuration
 st.set_page_config(
     page_title="Marketing Budget Calculator",
-    page_icon="💰",
+    page_icon="📊",
     layout="wide"
 )
 
@@ -172,7 +172,7 @@ admin_password = st.sidebar.text_input(
 )
 
 # Set your password here (change this to your desired password)
-CORRECT_PASSWORD = "Fintech@24680"  # Change this to your secure password
+CORRECT_PASSWORD = "admin123"  # Change this to your secure password
 
 is_admin = (admin_password == CORRECT_PASSWORD)
 
@@ -449,6 +449,7 @@ if len(results_df) > 0:
     # Set table properties
     styled_df = styled_df.set_properties(**{
         'text-align': 'center',
+        'vertical-align': 'middle',
         'padding': '12px',
         'border': '1px solid #dee2e6'
     })
@@ -461,12 +462,15 @@ if len(results_df) > 0:
              ('color', 'white'),
              ('font-weight', 'bold'),
              ('text-align', 'center'),
+             ('vertical-align', 'middle'),
              ('padding', '12px'),
              ('border', '1px solid #1565c0')
          ]},
         {'selector': 'tbody td', 
          'props': [
-             ('border', '1px solid #dee2e6')
+             ('border', '1px solid #dee2e6'),
+             ('text-align', 'center'),
+             ('vertical-align', 'middle')
          ]}
     ])
     
@@ -630,4 +634,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("")
+st.markdown("*Marketing Budget Calculator - Optimize your marketing spend across channels*")
