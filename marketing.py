@@ -172,7 +172,7 @@ admin_password = st.sidebar.text_input(
 )
 
 # Set your password here (change this to your desired password)
-CORRECT_PASSWORD = "admin123"  # Change this to your secure password
+CORRECT_PASSWORD = "Fintech@24680"  # Change this to your secure password
 
 is_admin = (admin_password == CORRECT_PASSWORD)
 
