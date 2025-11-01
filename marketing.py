@@ -98,6 +98,14 @@ st.markdown("""
         background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
         color: #c2185b;
     }
+    /* Chart card styling */
+    .chart-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -442,6 +450,7 @@ if len(results_df) > 0:
     col1, col2 = st.columns(2)
     
     with col1:
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         # Budget allocation pie chart
         fig_budget = px.pie(
             results_df, 
@@ -452,8 +461,10 @@ if len(results_df) > 0:
         )
         fig_budget.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig_budget, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         # Leads distribution
         fig_leads = px.bar(
             results_df,
@@ -475,11 +486,13 @@ if len(results_df) > 0:
             yaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding at top
         )
         st.plotly_chart(fig_leads, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     
     # Comparison bar chart: Amount to Spend vs Amount to Disburse
     col1, col2 = st.columns(2)
     
     with col1:
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         # Create comparison dataframe
         comparison_df = results_df[['Channel', 'Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)']].copy()
         comparison_df_melted = comparison_df.melt(
@@ -513,8 +526,10 @@ if len(results_df) > 0:
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
         )
         st.plotly_chart(fig_comparison, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
+        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
         # ROI comparison
         roi_df = results_df.copy()
         roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
@@ -537,6 +552,7 @@ if len(results_df) > 0:
             xaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding on right
         )
         st.plotly_chart(fig_roi, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 else:
     st.info("Add channels to see the charts.")
 
