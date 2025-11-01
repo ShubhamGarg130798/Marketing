@@ -381,7 +381,7 @@ if len(results_df) > 0:
     
     # Add ROI and Cost per Disbursed Lead columns
     detailed_df['ROI'] = (detailed_df['Amount to Disburse (₹ Lakhs)'] / detailed_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
-    detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Amount to Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(2)
+    detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Amount to Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(0)  # Round to whole number
     
     # Add serial number column starting from 1
     detailed_df.insert(0, 'S.No', range(1, len(detailed_df) + 1))
@@ -426,7 +426,7 @@ if len(results_df) > 0:
         'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
         'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
         'ROI': lambda x: f'{x}x' if x != '-' else '-',
-        'Cost per Disbursed Lead': lambda x: f'₹{x}' if x != '-' else '-'
+        'Cost per Disbursed Lead': lambda x: f'₹{int(x)}' if x != '-' else '-'
     })
     
     # Apply bold styling to the last row (TOTAL)
