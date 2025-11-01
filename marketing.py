@@ -469,6 +469,11 @@ if len(results_df) > 0:
             texttemplate=[format_indian_number(val) for val in results_df['Leads Required']],
             textposition='outside'
         )
+        # Add padding to top for labels
+        max_val = results_df['Leads Required'].max()
+        fig_leads.update_layout(
+            yaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding at top
+        )
         st.plotly_chart(fig_leads, use_container_width=True)
     
     # Comparison bar chart: Amount to Spend vs Amount to Disburse
@@ -498,9 +503,12 @@ if len(results_df) > 0:
             text='Amount (₹ Lakhs)'
         )
         fig_comparison.update_traces(texttemplate='₹%{text:.2f}L', textposition='outside')
+        # Add padding to top for labels
+        max_val = comparison_df_melted['Amount (₹ Lakhs)'].max()
         fig_comparison.update_layout(
             xaxis_title="Channel",
             yaxis_title="Amount (₹ Lakhs)",
+            yaxis=dict(range=[0, max_val * 1.15]),  # Add 15% padding at top
             legend_title="",
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
         )
@@ -522,7 +530,12 @@ if len(results_df) > 0:
             text='ROI'
         )
         fig_roi.update_traces(texttemplate='%{text:.2f}x', textposition='outside')
-        fig_roi.update_layout(showlegend=False)
+        # Add padding to right for labels
+        max_val = roi_df['ROI'].max()
+        fig_roi.update_layout(
+            showlegend=False,
+            xaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding on right
+        )
         st.plotly_chart(fig_roi, use_container_width=True)
 else:
     st.info("Add channels to see the charts.")
