@@ -595,23 +595,30 @@ if len(results_df) > 0:
     roi_df = results_df.copy()
     roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Marketing Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
     
-    best_roi_channel = roi_df.loc[roi_df['ROI'].idxmax(), 'Channel']
-    worst_roi_channel = roi_df.loc[roi_df['ROI'].idxmin(), 'Channel']
+    # Find best and worst performing channels
+    max_roi = roi_df['ROI'].max()
+    min_roi = roi_df['ROI'].min()
+    
+    best_roi_channels = roi_df[roi_df['ROI'] == max_roi]['Channel'].tolist()
+    worst_roi_channels = roi_df[roi_df['ROI'] == min_roi]['Channel'].tolist()
+    
     highest_spend_channel = results_df.loc[results_df['Marketing Spend (₹ Lakhs)'].idxmax(), 'Channel']
     
     col1, col2 = st.columns(2)
     
     with col1:
+        best_channels_text = ', '.join(best_roi_channels) if len(best_roi_channels) > 1 else best_roi_channels[0]
         st.info(f"""
-        **🏆 Best Performing Channel**
+        **🏆 Best Performing Channel{'s' if len(best_roi_channels) > 1 else ''}**
         
-        {best_roi_channel} shows the highest ROI of {roi_df.loc[roi_df['Channel'] == best_roi_channel, 'ROI'].values[0]:.2f}x
+        {best_channels_text} show{'s' if len(best_roi_channels) == 1 else ''} the highest ROI of {max_roi:.2f}x
         """)
         
+        worst_channels_text = ', '.join(worst_roi_channels) if len(worst_roi_channels) > 1 else worst_roi_channels[0]
         st.warning(f"""
-        **⚠️ Channel Requiring Attention**
+        **⚠️ Channel{'s' if len(worst_roi_channels) > 1 else ''} Requiring Attention**
         
-        {worst_roi_channel} has the lowest ROI of {roi_df.loc[roi_df['Channel'] == worst_roi_channel, 'ROI'].values[0]:.2f}x
+        {worst_channels_text} ha{'s' if len(worst_roi_channels) == 1 else 've'} the lowest ROI of {min_roi:.2f}x
         """)
     
     with col2:
