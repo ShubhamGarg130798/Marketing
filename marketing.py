@@ -36,7 +36,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title
-st.markdown("<h1 class='main-header'>📊 Marketing Budget Calculator</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-header'>💰 Marketing Budget Calculator</h1>", unsafe_allow_html=True)
 
 # Sidebar for inputs
 st.sidebar.header("Input Parameters")
@@ -427,31 +427,6 @@ if len(results_df) > 0:
             
             Average cost per disbursed lead: ₹{(total_spend * 100000 / disbursal_leads_required):.2f}
             """)
-    
-    # Recommendations
-    st.subheader("📋 Recommendations")
-    
-    recommendations = []
-    
-    # Check conversion rates
-    low_conv_channels = channel_df[channel_df['Conversion %'] < 3]['Channel'].tolist()
-    if low_conv_channels:
-        recommendations.append(f"• Consider improving conversion rates for {', '.join(low_conv_channels)} through better lead qualification")
-    
-    # Check CPL
-    high_cpl_channels = channel_df[channel_df['CPL'] > 100]['Channel'].tolist()
-    if high_cpl_channels:
-        recommendations.append(f"• Optimize campaigns for {', '.join(high_cpl_channels)} to reduce Cost Per Lead")
-    
-    # Budget allocation
-    if roi_df.loc[roi_df['Channel'] == best_roi_channel, 'ROI'].values[0] > 2 * roi_df.loc[roi_df['Channel'] == worst_roi_channel, 'ROI'].values[0]:
-        recommendations.append(f"• Consider reallocating budget from {worst_roi_channel} to {best_roi_channel} for better ROI")
-    
-    if recommendations:
-        for rec in recommendations:
-            st.write(rec)
-    else:
-        st.write("• Current budget allocation appears to be well-balanced")
 else:
     st.info("Add channels to see insights and recommendations.")
 
