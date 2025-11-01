@@ -319,7 +319,7 @@ if len(results_df) > 0:
     detailed_df = pd.concat([detailed_df, pd.DataFrame([totals])], ignore_index=True)
     
     # Display the table with formatting
-    st.dataframe(detailed_df.style.format({
+    styled_df = detailed_df.style.format({
         'S.No': lambda x: x if x != '-' else '-',
         'CPL (₹)': lambda x: f'₹{x}' if x != '-' else '-',
         'Conversion %': lambda x: f'{x}%' if x != '-' else '-',
@@ -329,7 +329,17 @@ if len(results_df) > 0:
         'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
         'ROI': lambda x: f'{x}x' if x != '-' else '-',
         'Cost per Disbursed Lead': lambda x: f'₹{x}' if x != '-' else '-'
-    }), use_container_width=True)
+    })
+    
+    # Apply bold styling to the last row (TOTAL)
+    def highlight_total(row):
+        if row['Channel'] == 'TOTAL':
+            return ['font-weight: bold'] * len(row)
+        return [''] * len(row)
+    
+    styled_df = styled_df.apply(highlight_total, axis=1)
+    
+    st.dataframe(styled_df, use_container_width=True, hide_index=True)
 else:
     st.info("Add channels to see detailed results.")
 
@@ -432,4 +442,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("")
+st.markdown("*Marketing Budget Calculator - Optimize your marketing spend across channels*")
