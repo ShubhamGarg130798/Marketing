@@ -32,6 +32,45 @@ st.markdown("""
         border-left: 4px solid #1f77b4;
         margin: 1rem 0;
     }
+    /* Custom metric cards */
+    .metric-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        height: 100%;
+    }
+    .metric-card h3 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+    }
+    .metric-card p {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin: 0;
+    }
+    .card-blue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .card-green {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+    .card-orange {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+    .card-purple {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+    }
+    .card-teal {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -253,24 +292,48 @@ for idx, row in channel_df.iterrows():
 
 results_df = pd.DataFrame(results)
 
-# Main content area - Updated metrics
+# Main content area - Updated metrics with colorful cards
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.metric("Total Target", f"₹{target:.0f} L", delta=None)
+    st.markdown(f"""
+    <div class="metric-card card-blue">
+        <h3>Total Target</h3>
+        <p>₹{target:.0f} L</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col2:
-    st.metric("Reloan", f"₹{reloan:.0f} L", delta=None)
+    st.markdown(f"""
+    <div class="metric-card card-green">
+        <h3>Reloan</h3>
+        <p>₹{reloan:.0f} L</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col3:
-    st.metric("Target from Marketing", f"₹{target_from_marketing:.0f} L", delta=None, 
-              help="Target - Reloan")
+    st.markdown(f"""
+    <div class="metric-card card-orange">
+        <h3>Target from Marketing</h3>
+        <p>₹{target_from_marketing:.0f} L</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col4:
-    st.metric("Total Leads Required", f"{results_df['Leads Required'].sum():,}", delta=None)
+    st.markdown(f"""
+    <div class="metric-card card-purple">
+        <h3>Total Leads Required</h3>
+        <p>{results_df['Leads Required'].sum():,}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col5:
-    st.metric("Total Marketing Spend", f"₹{results_df['Amount to Spend (₹ Lakhs)'].sum():.1f} L", delta=None)
+    st.markdown(f"""
+    <div class="metric-card card-teal">
+        <h3>Total Marketing Spend</h3>
+        <p>₹{results_df['Amount to Spend (₹ Lakhs)'].sum():.1f} L</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Main content sections - all on one page
 
