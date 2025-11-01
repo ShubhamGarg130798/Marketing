@@ -429,13 +429,46 @@ if len(results_df) > 0:
         'Cost per Disbursed Lead': lambda x: f'₹{int(x)}' if isinstance(x, (int, float)) and x != '-' else '-'
     })
     
-    # Apply bold styling to the last row (TOTAL)
+    # Apply bold styling and background to TOTAL row
     def highlight_total(row):
         if row['Channel'] == 'TOTAL':
-            return ['font-weight: bold'] * len(row)
+            return ['font-weight: bold; background-color: #e3f2fd; color: #1565c0;'] * len(row)
+        return [''] * len(row)
+    
+    # Apply alternating row colors
+    def alternating_rows(row):
+        if row.name % 2 == 0 and row['Channel'] != 'TOTAL':
+            return ['background-color: #f8f9fa;'] * len(row)
+        elif row['Channel'] != 'TOTAL':
+            return ['background-color: white;'] * len(row)
         return [''] * len(row)
     
     styled_df = styled_df.apply(highlight_total, axis=1)
+    styled_df = styled_df.apply(alternating_rows, axis=1)
+    
+    # Set table properties
+    styled_df = styled_df.set_properties(**{
+        'text-align': 'center',
+        'padding': '12px',
+        'border': '1px solid #dee2e6'
+    })
+    
+    # Style the header
+    styled_df = styled_df.set_table_styles([
+        {'selector': 'thead th', 
+         'props': [
+             ('background-color', '#1565c0'),
+             ('color', 'white'),
+             ('font-weight', 'bold'),
+             ('text-align', 'center'),
+             ('padding', '12px'),
+             ('border', '1px solid #1565c0')
+         ]},
+        {'selector': 'tbody td', 
+         'props': [
+             ('border', '1px solid #dee2e6')
+         ]}
+    ])
     
     st.dataframe(styled_df, use_container_width=True, hide_index=True)
 else:
