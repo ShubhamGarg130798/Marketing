@@ -119,8 +119,8 @@ st.sidebar.markdown("*All amounts are in Lakhs (₹)*")
 # New Input parameters
 target = st.sidebar.number_input(
     "Target (₹ Lakhs)", 
-    min_value=10.0, 
-    max_value=2000.0, 
+    min_value=0.0, 
+    max_value=10000000.0, 
     value=250.0, 
     step=10.0,
     help="Total target disbursement amount in lakhs"
@@ -129,7 +129,7 @@ target = st.sidebar.number_input(
 reloan = st.sidebar.number_input(
     "Reloan (₹ Lakhs)", 
     min_value=0.0, 
-    max_value=2000.0, 
+    max_value=10000000.0, 
     value=150.0, 
     step=10.0,
     help="Expected reloan amount in lakhs"
@@ -152,8 +152,8 @@ st.sidebar.markdown("---")
 
 avg_ticket_size = st.sidebar.number_input(
     "Average Ticket Size (₹ Lakhs)", 
-    min_value=0.1, 
-    max_value=10.0, 
+    min_value=0.0, 
+    max_value=10000000.0, 
     value=0.25, 
     step=0.05,
     help="Average loan amount per customer in lakhs"
@@ -234,8 +234,8 @@ if is_admin:
         with col1:
             cpl = st.number_input(
                 "CPL", 
-                min_value=1.0, 
-                max_value=1000.0, 
+                min_value=0.0, 
+                max_value=10000000.0, 
                 value=float(channel['cpl']), 
                 step=0.1,
                 key=f"cpl_{idx}"
@@ -425,8 +425,8 @@ if len(results_df) > 0:
         'Leads to Disburse': lambda x: format_indian_number(x) if x != '-' else '-',
         'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
         'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
-        'ROI': lambda x: f'{x}x' if x != '-' else '-',
-        'Cost per Disbursed Lead': lambda x: f'₹{int(x)}' if x != '-' else '-'
+        'ROI': lambda x: f'{x}x' if isinstance(x, (int, float)) and x != '-' else '-',
+        'Cost per Disbursed Lead': lambda x: f'₹{int(x)}' if isinstance(x, (int, float)) and x != '-' else '-'
     })
     
     # Apply bold styling to the last row (TOTAL)
