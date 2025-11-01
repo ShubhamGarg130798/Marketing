@@ -588,7 +588,7 @@ else:
 st.markdown("---")
 
 # Section 3: Key Insights & Recommendations
-st.header("💡 Key Insights & Recommendations")
+st.header("💡 Key Insights")
 
 if len(results_df) > 0:
     # Calculate insights
