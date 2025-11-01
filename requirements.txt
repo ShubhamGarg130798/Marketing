@@ -1,18 +1,15 @@
 streamlit
-   pandas
-   plotly
+pandas
+plotly
 ```
 
-6. **Commit the file:**
-   - Scroll down
-   - Click the green **"Commit changes"** button
+**B. Python version issue**
+- Streamlit Cloud might be using an old Python version
 
-## 📍 Where it should be:
+## 🛠️ Quick Fix - Try This:
 
-The `requirements.txt` should be in the **same folder** as your `marketing.py` file (the root of your repository).
-
-Your repository structure should look like:
+Go back to your GitHub repository and **edit your `requirements.txt`** file to include specific versions:
 ```
-Marketing/
-├── marketing.py          ← (already there ✅)
-└── requirements.txt      ← (add this)
+streamlit==1.31.0
+pandas==2.0.0
+plotly==5.18.0
