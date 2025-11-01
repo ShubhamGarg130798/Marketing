@@ -25,6 +25,13 @@ st.markdown("""
         border-radius: 10px;
         margin-bottom: 1rem;
     }
+    .calculated-value {
+        background-color: #e8f4f8;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #1f77b4;
+        margin: 1rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -35,15 +42,39 @@ st.markdown("<h1 class='main-header'>📊 Marketing Budget Calculator</h1>", uns
 st.sidebar.header("Input Parameters")
 st.sidebar.markdown("*All amounts are in Lakhs (₹)*")
 
-# Input parameters
-target_amount = st.sidebar.number_input(
-    "Target Amount (₹ Lakhs)", 
+# New Input parameters
+target = st.sidebar.number_input(
+    "Target (₹ Lakhs)", 
     min_value=10.0, 
-    max_value=1000.0, 
-    value=100.0, 
+    max_value=2000.0, 
+    value=250.0, 
     step=10.0,
     help="Total target disbursement amount in lakhs"
 )
+
+reloan = st.sidebar.number_input(
+    "Reloan (₹ Lakhs)", 
+    min_value=0.0, 
+    max_value=2000.0, 
+    value=150.0, 
+    step=10.0,
+    help="Expected reloan amount in lakhs"
+)
+
+# Calculate Target from Marketing
+target_from_marketing = target - reloan
+
+# Display calculated value
+st.sidebar.markdown("### 📊 Calculated Value")
+st.sidebar.markdown(f"""
+<div class='calculated-value'>
+    <strong>Target from Marketing</strong><br>
+    <span style='font-size: 1.5rem; color: #1f77b4;'>₹{target_from_marketing:.2f} L</span><br>
+    <small style='color: #666;'>Target ({target:.0f}) - Reloan ({reloan:.0f})</small>
+</div>
+""", unsafe_allow_html=True)
+
+st.sidebar.markdown("---")
 
 avg_ticket_size = st.sidebar.number_input(
     "Average Ticket Size (₹ Lakhs)", 
@@ -121,13 +152,13 @@ total_budget_split = channel_df['Budget Split %'].sum()
 if total_budget_split != 100:
     st.sidebar.error(f"⚠️ Budget split must equal 100%. Current: {total_budget_split:.1f}%")
 
-# Calculate derived values
-disbursal_leads_required = int(target_amount / avg_ticket_size)
+# Calculate derived values using target_from_marketing
+disbursal_leads_required = int(target_from_marketing / avg_ticket_size)
 
 # Main calculations
 results = []
 for idx, row in channel_df.iterrows():
-    channel_target = target_amount * (row['Budget Split %'] / 100)
+    channel_target = target_from_marketing * (row['Budget Split %'] / 100)
     leads_to_disburse = int(channel_target / avg_ticket_size)
     leads_required = int(leads_to_disburse / (row['Conversion %'] / 100))
     amount_to_spend = (leads_required * row['CPL']) / 100000  # Convert to lakhs
@@ -144,19 +175,23 @@ for idx, row in channel_df.iterrows():
 
 results_df = pd.DataFrame(results)
 
-# Main content area
-col1, col2, col3, col4 = st.columns(4)
+# Main content area - Updated metrics
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.metric("Target Amount", f"₹{target_amount:.0f} L", delta=None)
+    st.metric("Total Target", f"₹{target:.0f} L", delta=None)
 
 with col2:
-    st.metric("Avg Ticket Size", f"₹{avg_ticket_size:.2f} L", delta=None)
+    st.metric("Reloan", f"₹{reloan:.0f} L", delta=None)
 
 with col3:
-    st.metric("Total Leads Required", f"{results_df['Leads Required'].sum():,}", delta=None)
+    st.metric("Target from Marketing", f"₹{target_from_marketing:.0f} L", delta=None, 
+              help="Target - Reloan")
 
 with col4:
+    st.metric("Total Leads Required", f"{results_df['Leads Required'].sum():,}", delta=None)
+
+with col5:
     st.metric("Total Marketing Spend", f"₹{results_df['Amount to Spend (₹ Lakhs)'].sum():.1f} L", delta=None)
 
 # Tabs for different views
@@ -287,7 +322,7 @@ with tab4:
         st.success(f"""
         **💰 Budget Efficiency**
         
-        Total marketing efficiency: {(target_amount / results_df['Amount to Spend (₹ Lakhs)'].sum()):.2f}x return on marketing spend
+        Total marketing efficiency: {(target_from_marketing / results_df['Amount to Spend (₹ Lakhs)'].sum()):.2f}x return on marketing spend
         """)
         
         st.info(f"""
