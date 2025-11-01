@@ -36,40 +36,44 @@ st.markdown("""
     .metric-card {
         padding: 1.5rem;
         border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         text-align: center;
-        height: 100%;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
     .metric-card h3 {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        margin-bottom: 0.5rem;
-        opacity: 0.9;
+        margin-bottom: 0.8rem;
+        opacity: 0.8;
     }
     .metric-card p {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         font-weight: bold;
         margin: 0;
     }
     .card-blue {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        color: #1565c0;
     }
     .card-green {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
+        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+        color: #6a1b9a;
     }
     .card-orange {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
+        background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+        color: #00695c;
     }
     .card-purple {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        color: #e65100;
     }
     .card-teal {
-        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        color: white;
+        background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        color: #c2185b;
     }
 </style>
 """, unsafe_allow_html=True)
