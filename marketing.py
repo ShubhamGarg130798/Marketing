@@ -432,4 +432,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("**")
+st.markdown("")
