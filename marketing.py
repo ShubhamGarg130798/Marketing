@@ -432,4 +432,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("*Marketing Budget Calculator - Optimize your marketing spend across channels*")
+st.markdown("**")
