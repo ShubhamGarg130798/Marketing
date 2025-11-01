@@ -45,8 +45,8 @@ st.sidebar.markdown("*All amounts are in Lakhs (₹)*")
 # New Input parameters
 target = st.sidebar.number_input(
     "Target (₹ Lakhs)", 
-    min_value=10.0, 
-    max_value=2000.0, 
+    min_value=0.0, 
+    max_value=200000000.0, 
     value=250.0, 
     step=10.0,
     help="Total target disbursement amount in lakhs"
@@ -55,7 +55,7 @@ target = st.sidebar.number_input(
 reloan = st.sidebar.number_input(
     "Reloan (₹ Lakhs)", 
     min_value=0.0, 
-    max_value=2000.0, 
+    max_value=200000000.0, 
     value=150.0, 
     step=10.0,
     help="Expected reloan amount in lakhs"
