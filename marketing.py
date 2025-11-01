@@ -450,109 +450,113 @@ if len(results_df) > 0:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-        # Budget allocation pie chart
-        fig_budget = px.pie(
-            results_df, 
-            values='Amount to Spend (₹ Lakhs)', 
-            names='Channel',
-            title='Marketing Budget Allocation',
-            hole=0.4
-        )
-        fig_budget.update_traces(textposition='inside', textinfo='percent+label')
-        st.plotly_chart(fig_budget, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container():
+            st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem;">', unsafe_allow_html=True)
+            # Budget allocation pie chart
+            fig_budget = px.pie(
+                results_df, 
+                values='Amount to Spend (₹ Lakhs)', 
+                names='Channel',
+                title='Marketing Budget Allocation',
+                hole=0.4
+            )
+            fig_budget.update_traces(textposition='inside', textinfo='percent+label')
+            st.plotly_chart(fig_budget, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-        # Leads distribution
-        fig_leads = px.bar(
-            results_df,
-            x='Channel',
-            y='Leads Required',
-            title='Leads Required by Channel',
-            color='Conversion %',
-            color_continuous_scale='Blues',
-            text='Leads Required'
-        )
-        # Format text labels with Indian numbering
-        fig_leads.update_traces(
-            texttemplate=[format_indian_number(val) for val in results_df['Leads Required']],
-            textposition='outside'
-        )
-        # Add padding to top for labels
-        max_val = results_df['Leads Required'].max()
-        fig_leads.update_layout(
-            yaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding at top
-        )
-        st.plotly_chart(fig_leads, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container():
+            st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem;">', unsafe_allow_html=True)
+            # Leads distribution
+            fig_leads = px.bar(
+                results_df,
+                x='Channel',
+                y='Leads Required',
+                title='Leads Required by Channel',
+                color='Conversion %',
+                color_continuous_scale='Blues',
+                text='Leads Required'
+            )
+            # Format text labels with Indian numbering
+            fig_leads.update_traces(
+                texttemplate=[format_indian_number(val) for val in results_df['Leads Required']],
+                textposition='outside'
+            )
+            # Add padding to top for labels
+            max_val = results_df['Leads Required'].max()
+            fig_leads.update_layout(
+                yaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding at top
+            )
+            st.plotly_chart(fig_leads, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
     
     # Comparison bar chart: Amount to Spend vs Amount to Disburse
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-        # Create comparison dataframe
-        comparison_df = results_df[['Channel', 'Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)']].copy()
-        comparison_df_melted = comparison_df.melt(
-            id_vars='Channel',
-            value_vars=['Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)'],
-            var_name='Type',
-            value_name='Amount (₹ Lakhs)'
-        )
-        
-        fig_comparison = px.bar(
-            comparison_df_melted,
-            x='Channel',
-            y='Amount (₹ Lakhs)',
-            color='Type',
-            title='Spend vs Disburse Comparison by Channel',
-            barmode='group',
-            color_discrete_map={
-                'Amount to Spend (₹ Lakhs)': '#EF553B',
-                'Amount to Disburse (₹ Lakhs)': '#00CC96'
-            },
-            text='Amount (₹ Lakhs)'
-        )
-        fig_comparison.update_traces(texttemplate='₹%{text:.2f}L', textposition='outside')
-        # Add padding to top for labels
-        max_val = comparison_df_melted['Amount (₹ Lakhs)'].max()
-        fig_comparison.update_layout(
-            xaxis_title="Channel",
-            yaxis_title="Amount (₹ Lakhs)",
-            yaxis=dict(range=[0, max_val * 1.15]),  # Add 15% padding at top
-            legend_title="",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-        )
-        st.plotly_chart(fig_comparison, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container():
+            st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem;">', unsafe_allow_html=True)
+            # Create comparison dataframe
+            comparison_df = results_df[['Channel', 'Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)']].copy()
+            comparison_df_melted = comparison_df.melt(
+                id_vars='Channel',
+                value_vars=['Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)'],
+                var_name='Type',
+                value_name='Amount (₹ Lakhs)'
+            )
+            
+            fig_comparison = px.bar(
+                comparison_df_melted,
+                x='Channel',
+                y='Amount (₹ Lakhs)',
+                color='Type',
+                title='Spend vs Disburse Comparison by Channel',
+                barmode='group',
+                color_discrete_map={
+                    'Amount to Spend (₹ Lakhs)': '#EF553B',
+                    'Amount to Disburse (₹ Lakhs)': '#00CC96'
+                },
+                text='Amount (₹ Lakhs)'
+            )
+            fig_comparison.update_traces(texttemplate='₹%{text:.2f}L', textposition='outside')
+            # Add padding to top for labels
+            max_val = comparison_df_melted['Amount (₹ Lakhs)'].max()
+            fig_comparison.update_layout(
+                xaxis_title="Channel",
+                yaxis_title="Amount (₹ Lakhs)",
+                yaxis=dict(range=[0, max_val * 1.15]),  # Add 15% padding at top
+                legend_title="",
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_comparison, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-        # ROI comparison
-        roi_df = results_df.copy()
-        roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
-        
-        fig_roi = px.bar(
-            roi_df.sort_values('ROI', ascending=True),
-            x='ROI',
-            y='Channel',
-            orientation='h',
-            title='Return on Investment by Channel',
-            color='ROI',
-            color_continuous_scale='Greens',
-            text='ROI'
-        )
-        fig_roi.update_traces(texttemplate='%{text:.2f}x', textposition='outside')
-        # Add padding to right for labels
-        max_val = roi_df['ROI'].max()
-        fig_roi.update_layout(
-            showlegend=False,
-            xaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding on right
-        )
-        st.plotly_chart(fig_roi, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container():
+            st.markdown('<div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem;">', unsafe_allow_html=True)
+            # ROI comparison
+            roi_df = results_df.copy()
+            roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+            
+            fig_roi = px.bar(
+                roi_df.sort_values('ROI', ascending=True),
+                x='ROI',
+                y='Channel',
+                orientation='h',
+                title='Return on Investment by Channel',
+                color='ROI',
+                color_continuous_scale='Greens',
+                text='ROI'
+            )
+            fig_roi.update_traces(texttemplate='%{text:.2f}x', textposition='outside')
+            # Add padding to right for labels
+            max_val = roi_df['ROI'].max()
+            fig_roi.update_layout(
+                showlegend=False,
+                xaxis=dict(range=[0, max_val * 1.15])  # Add 15% padding on right
+            )
+            st.plotly_chart(fig_roi, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 else:
     st.info("Add channels to see the charts.")
 
