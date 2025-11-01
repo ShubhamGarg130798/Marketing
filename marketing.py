@@ -320,7 +320,7 @@ for idx, row in channel_df.iterrows():
         'Amount to Disburse (₹ Lakhs)': channel_target,
         'Leads to Disburse': leads_to_disburse,
         'Leads Required': leads_required,
-        'Amount to Spend (₹ Lakhs)': amount_to_spend,
+        'Marketing Spend (₹ Lakhs)': amount_to_spend,
         'CPL (₹)': row['CPL'],
         'Conversion %': row['Conversion %']
     })
@@ -366,7 +366,7 @@ with col5:
     st.markdown(f"""
     <div class="metric-card card-teal">
         <h3>Total Marketing Spend</h3>
-        <p>₹{results_df['Amount to Spend (₹ Lakhs)'].sum():.1f} L</p>
+        <p>₹{results_df['Marketing Spend (₹ Lakhs)'].sum():.1f} L</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -380,8 +380,8 @@ if len(results_df) > 0:
     detailed_df = results_df.copy()
     
     # Add ROI and Cost per Disbursed Lead columns
-    detailed_df['ROI'] = (detailed_df['Amount to Disburse (₹ Lakhs)'] / detailed_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
-    detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Amount to Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(0)  # Round to whole number
+    detailed_df['ROI'] = (detailed_df['Amount to Disburse (₹ Lakhs)'] / detailed_df['Marketing Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0).round(2)
+    detailed_df['Cost per Disbursed Lead'] = ((detailed_df['Marketing Spend (₹ Lakhs)'] * 100000) / (detailed_df['Amount to Disburse (₹ Lakhs)'] / avg_ticket_size)).replace([float('inf'), -float('inf')], 0).round(0)  # Round to whole number
     
     # Add serial number column starting from 1
     detailed_df.insert(0, 'S.No', range(1, len(detailed_df) + 1))
@@ -394,7 +394,7 @@ if len(results_df) > 0:
         'Conversion %',
         'Leads Required',
         'Leads to Disburse',
-        'Amount to Spend (₹ Lakhs)',
+        'Marketing Spend (₹ Lakhs)',
         'Amount to Disburse (₹ Lakhs)',
         'ROI',
         'Cost per Disbursed Lead'
@@ -408,7 +408,7 @@ if len(results_df) > 0:
         'Conversion %': '-',
         'Leads Required': detailed_df['Leads Required'].sum(),
         'Leads to Disburse': detailed_df['Leads to Disburse'].sum(),
-        'Amount to Spend (₹ Lakhs)': detailed_df['Amount to Spend (₹ Lakhs)'].sum(),
+        'Marketing Spend (₹ Lakhs)': detailed_df['Marketing Spend (₹ Lakhs)'].sum(),
         'Amount to Disburse (₹ Lakhs)': detailed_df['Amount to Disburse (₹ Lakhs)'].sum(),
         'ROI': '-',
         'Cost per Disbursed Lead': '-'
@@ -423,7 +423,7 @@ if len(results_df) > 0:
         'Conversion %': lambda x: f'{x}%' if x != '-' else '-',
         'Leads Required': lambda x: format_indian_number(x) if x != '-' else '-',
         'Leads to Disburse': lambda x: format_indian_number(x) if x != '-' else '-',
-        'Amount to Spend (₹ Lakhs)': '₹{:.2f} L',
+        'Marketing Spend (₹ Lakhs)': '₹{:.2f} L',
         'Amount to Disburse (₹ Lakhs)': '₹{:.1f} L',
         'ROI': lambda x: f'{x}x' if isinstance(x, (int, float)) and x != '-' else '-',
         'Cost per Disbursed Lead': lambda x: f'₹{int(x)}' if isinstance(x, (int, float)) and x != '-' else '-'
@@ -490,7 +490,7 @@ if len(results_df) > 0:
         # Budget allocation pie chart
         fig_budget = px.pie(
             results_df, 
-            values='Amount to Spend (₹ Lakhs)', 
+            values='Marketing Spend (₹ Lakhs)', 
             names='Channel',
             title='Marketing Budget Allocation',
             hole=0.4
@@ -526,10 +526,10 @@ if len(results_df) > 0:
     
     with col1:
         # Create comparison dataframe
-        comparison_df = results_df[['Channel', 'Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)']].copy()
+        comparison_df = results_df[['Channel', 'Marketing Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)']].copy()
         comparison_df_melted = comparison_df.melt(
             id_vars='Channel',
-            value_vars=['Amount to Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)'],
+            value_vars=['Marketing Spend (₹ Lakhs)', 'Amount to Disburse (₹ Lakhs)'],
             var_name='Type',
             value_name='Amount (₹ Lakhs)'
         )
@@ -542,7 +542,7 @@ if len(results_df) > 0:
             title='Spend vs Disburse Comparison by Channel',
             barmode='group',
             color_discrete_map={
-                'Amount to Spend (₹ Lakhs)': '#EF553B',
+                'Marketing Spend (₹ Lakhs)': '#EF553B',
                 'Amount to Disburse (₹ Lakhs)': '#00CC96'
             },
             text='Amount (₹ Lakhs)'
@@ -562,7 +562,7 @@ if len(results_df) > 0:
     with col2:
         # ROI comparison
         roi_df = results_df.copy()
-        roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+        roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Marketing Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
         
         fig_roi = px.bar(
             roi_df.sort_values('ROI', ascending=True),
@@ -593,11 +593,11 @@ st.header("💡 Key Insights & Recommendations")
 if len(results_df) > 0:
     # Calculate insights
     roi_df = results_df.copy()
-    roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Amount to Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
+    roi_df['ROI'] = (roi_df['Amount to Disburse (₹ Lakhs)'] / roi_df['Marketing Spend (₹ Lakhs)']).replace([float('inf'), -float('inf')], 0)
     
     best_roi_channel = roi_df.loc[roi_df['ROI'].idxmax(), 'Channel']
     worst_roi_channel = roi_df.loc[roi_df['ROI'].idxmin(), 'Channel']
-    highest_spend_channel = results_df.loc[results_df['Amount to Spend (₹ Lakhs)'].idxmax(), 'Channel']
+    highest_spend_channel = results_df.loc[results_df['Marketing Spend (₹ Lakhs)'].idxmax(), 'Channel']
     
     col1, col2 = st.columns(2)
     
@@ -615,7 +615,7 @@ if len(results_df) > 0:
         """)
     
     with col2:
-        total_spend = results_df['Amount to Spend (₹ Lakhs)'].sum()
+        total_spend = results_df['Marketing Spend (₹ Lakhs)'].sum()
         if total_spend > 0:
             st.success(f"""
             **💰 Budget Efficiency**
