@@ -1,0 +1,18 @@
+streamlit
+   pandas
+   plotly
+```
+
+6. **Commit the file:**
+   - Scroll down
+   - Click the green **"Commit changes"** button
+
+## 📍 Where it should be:
+
+The `requirements.txt` should be in the **same folder** as your `marketing.py` file (the root of your repository).
+
+Your repository structure should look like:
+```
+Marketing/
+├── marketing.py          ← (already there ✅)
+└── requirements.txt      ← (add this)
