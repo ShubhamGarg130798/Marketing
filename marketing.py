@@ -29,7 +29,7 @@ def format_indian_number(number):
 # Set page configuration
 st.set_page_config(
     page_title="Marketing Budget Calculator",
-    page_icon="📊",
+    page_icon="💰",
     layout="wide"
 )
 
@@ -172,7 +172,7 @@ admin_password = st.sidebar.text_input(
 )
 
 # Set your password here (change this to your desired password)
-CORRECT_PASSWORD = "admin123"  # Change this to your secure password
+CORRECT_PASSWORD = "Fintech@24680"  # Change this to your secure password
 
 is_admin = (admin_password == CORRECT_PASSWORD)
 
@@ -641,4 +641,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("*Marketing Budget Calculator - Optimize your marketing spend across channels*")
+st.markdown("")
