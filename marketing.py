@@ -88,6 +88,27 @@ avg_ticket_size = st.sidebar.number_input(
 # Channel configuration
 st.sidebar.header("Channel Configuration")
 
+# Password protection for editing
+st.sidebar.markdown("### 🔒 Admin Access")
+admin_password = st.sidebar.text_input(
+    "Enter Password to Edit Channels",
+    type="password",
+    key="admin_password",
+    help="Contact admin for password"
+)
+
+# Set your password here (change this to your desired password)
+CORRECT_PASSWORD = "admin123"  # Change this to your secure password
+
+is_admin = (admin_password == CORRECT_PASSWORD)
+
+if admin_password and not is_admin:
+    st.sidebar.error("❌ Incorrect password")
+elif is_admin:
+    st.sidebar.success("✅ Admin access granted")
+
+st.sidebar.markdown("---")
+
 # Initialize session state for channels if not exists
 if 'channels' not in st.session_state:
     st.session_state.channels = [
@@ -102,7 +123,7 @@ if 'channels' not in st.session_state:
 st.sidebar.markdown("### Edit Channel Parameters")
 col1, col2 = st.sidebar.columns([3, 1])
 with col1:
-    if st.button("➕ Add New Channel", use_container_width=True):
+    if st.button("➕ Add New Channel", use_container_width=True, disabled=not is_admin):
         st.session_state.channels.append({
             'name': f'Channel {len(st.session_state.channels) + 1}',
             'cpl': 100.0,
@@ -110,6 +131,9 @@ with col1:
             'budget': 0.0
         })
         st.rerun()
+
+if not is_admin:
+    st.sidebar.info("🔒 Enter admin password to edit channels")
 
 # Display and edit channels
 edited_channels = []
@@ -125,11 +149,12 @@ for idx, channel in enumerate(st.session_state.channels):
             "Channel Name",
             value=channel['name'],
             key=f"name_{idx}",
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            disabled=not is_admin
         )
     
     with col2:
-        if st.button("🗑️", key=f"del_{idx}", help="Delete channel"):
+        if st.button("🗑️", key=f"del_{idx}", help="Delete channel", disabled=not is_admin):
             channels_to_remove.append(idx)
     
     col1, col2, col3 = st.sidebar.columns(3)
@@ -141,7 +166,8 @@ for idx, channel in enumerate(st.session_state.channels):
             max_value=1000.0, 
             value=float(channel['cpl']), 
             step=0.1,
-            key=f"cpl_{idx}"
+            key=f"cpl_{idx}",
+            disabled=not is_admin
         )
     
     with col2:
@@ -151,7 +177,8 @@ for idx, channel in enumerate(st.session_state.channels):
             max_value=100.0, 
             value=float(channel['conv']), 
             step=0.1,
-            key=f"conv_{idx}"
+            key=f"conv_{idx}",
+            disabled=not is_admin
         )
     
     with col3:
@@ -161,7 +188,8 @@ for idx, channel in enumerate(st.session_state.channels):
             max_value=100.0, 
             value=float(channel['budget']), 
             step=1.0,
-            key=f"budget_{idx}"
+            key=f"budget_{idx}",
+            disabled=not is_admin
         )
     
     edited_channels.append({
