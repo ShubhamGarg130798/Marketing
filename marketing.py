@@ -184,8 +184,8 @@ elif is_admin:
 # Initialize session state for channels if not exists
 if 'channels' not in st.session_state:
     st.session_state.channels = [
-        {'name': 'Google Ads', 'cpl': 27.5, 'conv': 9.25, 'budget': 45.0},
-        {'name': 'Meta Ads', 'cpl': 16.07, 'conv': 3.60, 'budget': 40.0},
+        {'name': 'Google Ads', 'cpl': 50.0, 'conv': 9.60, 'budget': 45.0},
+        {'name': 'Meta Ads', 'cpl': 50.0, 'conv': 4.80, 'budget': 40.0},
         {'name': 'RCS & SMS', 'cpl': 200.0, 'conv': 2.00, 'budget': 5.0},
         {'name': 'WhatsApp', 'cpl': 200.0, 'conv': 2.00, 'budget': 5.0},
         {'name': 'Email', 'cpl': 200.0, 'conv': 2.00, 'budget': 5.0}
